@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="id" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Walimatul 'Urs - Aji & Lisfatul</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Poppins', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                        cursive: ['Great Vibes', 'cursive'],
+                    },
+                    colors: {
+                        'g-primary': '#064e3b', // Dark Emerald
+                        'g-secondary': '#047857', // Emerald
+                        'g-bg': '#f0fdf4', // Hijau sangat muda
+                        'g-gold': '#d4af37', // Gold
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* FIX RESPONSIF: Cegah scroll samping sama sekali */
+        html, body { 
+            overflow-x: hidden; 
+            width: 100%; 
+            position: relative;
+        }
+        body.locked { overflow: hidden; height: 100vh; }
+        
+        /* Animasi Cover */
+        .cover-fade { animation: coverOut 1.2s cubic-bezier(0.77, 0, 0.175, 1) forwards; }
+        @keyframes coverOut {
+            0% { transform: translateY(0); opacity: 1; z-index: 50; }
+            100% { transform: translateY(-100%); opacity: 1; z-index: -1; visibility: hidden; }
+        }
+
+        .spin-slow { animation: spin 5s linear infinite; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+
+        /* --- ANIMASI LOVE BERGERAK (FLOATING HEARTS) --- */
+        .floating-heart {
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px) scale(1); opacity: 0.8; }
+            50% { transform: translateY(-15px) scale(1.1); opacity: 1; }
+            100% { transform: translateY(0px) scale(1); opacity: 0.8; }
+        }
+        /* Delay berbeda agar geraknya tidak barengan */
+        .delay-1 { animation-delay: 0.5s; }
+        .delay-2 { animation-delay: 1.5s; }
+        .delay-3 { animation-delay: 2.5s; }
+
+        /* Custom Wave Header Responsif */
+        .wave-card-header {
+            position: relative;
+            background: #064e3b;
+            color: white;
+            padding: 2rem 1rem 3rem 1rem;
+            border-radius: 1rem 1rem 0 0;
+        }
+        .wave-svg {
+            position: absolute;
+            bottom: -1px; /* Mencegah garis putih putus */
+            left: 0;
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-g-bg text-gray-800 font-sans antialiased locked">
+
+    <audio id="bg-music" loop>
+        <source src="/asset/music/music.mp3" type="audio/mpeg">
+    </audio>
+
+    <button id="music-btn" class="fixed bottom-6 right-6 z-40 bg-white/90 backdrop-blur-sm p-3 md:p-4 rounded-full shadow-2xl text-g-secondary hidden transition-all hover:scale-110 border border-g-secondary/20">
+        <i id="music-icon" class="fas fa-compact-disc text-xl md:text-2xl spin-slow"></i>
+    </button>
+
+    <div id="cover-page" class="fixed inset-0 z-50 flex flex-col items-center justify-center p-4 bg-g-primary overflow-hidden w-full">
+        <div class="absolute inset-0 bg-[url('/asset/image/image2.jpeg')] bg-cover bg-center opacity-20 mix-blend-luminosity"></div>
+        
+        <div class="relative z-10 text-center text-white px-4 md:px-6 w-full max-w-sm md:max-w-md bg-g-primary/70 backdrop-blur-md p-8 md:p-10 rounded-3xl border border-white/10 shadow-2xl">
+            <p class="font-sans tracking-[0.2em] md:tracking-[0.3em] text-xs uppercase mb-4 text-g-gold">Walimatul 'Urs</p>
+            <h1 class="font-cursive text-5xl md:text-7xl mb-2 text-white drop-shadow-lg">Aji & Lisfatul</h1>
+            <p class="font-serif text-xs md:text-sm mb-6 tracking-widest uppercase">20 Desember 2026</p>
+            
+            <div class="w-16 h-px bg-g-gold mx-auto mb-6"></div>
+            
+            <p class="mb-2 font-light text-xs md:text-sm text-gray-300">Kepada Yth. Bapak/Ibu/Saudara/i</p>
+            <p id="nama-tamu" class="text-xl md:text-2xl font-serif mb-8 text-white font-semibold break-words capitalize">Tamu Undangan</p>
+            
+            <button onclick="openInvitation()" class="bg-g-gold hover:bg-yellow-600 text-g-primary px-8 py-3 rounded-full text-xs md:text-sm font-semibold transition-all shadow-lg flex items-center gap-2 transform hover:scale-105 mx-auto">
+                <i class="far fa-envelope-open"></i> Buka Undangan
+            </button>
+        </div>
+    </div>
+
+    <section class="min-h-screen flex flex-col items-center justify-center text-center px-4 md:px-6 relative pt-16 pb-24 w-full">
+        
+        <div class="relative mt-8 mb-10 w-full max-w-[220px] md:max-w-[280px]" data-aos="zoom-in" data-aos-duration="1500">
+            <i class="fas fa-heart text-red-400 absolute -top-4 -left-6 text-3xl floating-heart z-20 drop-shadow-md delay-1"></i>
+            <i class="fas fa-heart text-pink-400 absolute top-1/2 -right-6 text-2xl floating-heart z-20 drop-shadow-md delay-2"></i>
+            <i class="fas fa-heart text-red-500 absolute -bottom-6 left-10 text-4xl floating-heart z-20 drop-shadow-md delay-3"></i>
+
+            <div class="aspect-[3/4] w-full rounded-t-full rounded-b-3xl overflow-hidden shadow-2xl border-4 border-white relative z-10 bg-g-bg">
+                <img src="/asset/image/image2.jpeg" alt="Hero Photo" class="w-full h-full object-cover">
+            </div>
+        </div>
+        
+        <p class="font-serif italic text-g-secondary text-lg md:text-xl mb-3 px-4" data-aos="fade-up" data-aos-delay="200">Assalamu’alaikum Warahmatullahi Wabarakatuh</p>
+        <p class="text-xs md:text-sm font-light leading-relaxed text-gray-600 mb-8 max-w-lg mx-auto px-2" data-aos="fade-up" data-aos-delay="400">
+            Dengan memohon rahmat dan ridho Allah SWT, kami mengundang Anda untuk menghadiri acara pernikahan kami:
+        </p>
+        
+        <h2 class="font-cursive text-6xl md:text-8xl text-g-primary mb-4" data-aos="fade-up" data-aos-delay="600">Aji & Lisfatul</h2>
+        <p class="font-sans text-sm md:text-xl tracking-[0.2em] md:tracking-[0.3em] mb-10 uppercase text-gray-500 font-medium" data-aos="fade-up" data-aos-delay="800">20 . 12 . 2026</p>
+        
+        <div id="countdown" class="grid grid-cols-4 gap-2 md:gap-4 justify-center text-center font-serif w-full max-w-md px-2" data-aos="fade-up" data-aos-delay="1000">
+            <div class="bg-white py-3 md:py-4 rounded-xl shadow-md border border-g-bg flex flex-col items-center justify-center">
+                <p id="days" class="text-2xl md:text-4xl text-g-primary font-bold">00</p>
+                <p class="text-[9px] md:text-xs tracking-widest uppercase mt-1 text-gray-400 font-sans">Hari</p>
+            </div>
+            <div class="bg-white py-3 md:py-4 rounded-xl shadow-md border border-g-bg flex flex-col items-center justify-center">
+                <p id="hours" class="text-2xl md:text-4xl text-g-primary font-bold">00</p>
+                <p class="text-[9px] md:text-xs tracking-widest uppercase mt-1 text-gray-400 font-sans">Jam</p>
+            </div>
+            <div class="bg-white py-3 md:py-4 rounded-xl shadow-md border border-g-bg flex flex-col items-center justify-center">
+                <p id="minutes" class="text-2xl md:text-4xl text-g-primary font-bold">00</p>
+                <p class="text-[9px] md:text-xs tracking-widest uppercase mt-1 text-gray-400 font-sans">Menit</p>
+            </div>
+            <div class="bg-white py-3 md:py-4 rounded-xl shadow-md border border-g-bg flex flex-col items-center justify-center">
+                <p id="seconds" class="text-2xl md:text-4xl text-g-primary font-bold">00</p>
+                <p class="text-[9px] md:text-xs tracking-widest uppercase mt-1 text-gray-400 font-sans">Detik</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-16 md:py-20 bg-white relative w-full overflow-hidden">
+        <div class="max-w-4xl mx-auto px-4 md:px-6 text-center">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16 items-center">
+                <div class="flex flex-col items-center" data-aos="fade-right" data-aos-duration="1000">
+                    <div class="w-full max-w-[220px] md:max-w-[260px] aspect-[3/4] rounded-t-full rounded-b-3xl overflow-hidden mb-6 shadow-xl border-4 border-g-bg relative">
+                        <img src="https://images.unsplash.com/photo-1557862921-37829c790f19?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Aji" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-2xl md:text-3xl font-bold text-g-primary mb-2">Aji Ulhak</h3>
+                    <p class="text-[10px] md:text-xs tracking-widest uppercase text-g-secondary mb-1">Putra Dari</p>
+                    <p class="text-sm font-medium text-gray-600">Bapak Ust. Jandan Hamdan & Ibu Lilis Muniroh</p>
+                    <p class="text-xs text-gray-400 mt-1">Cianjur, Jawa Barat</p>
+                </div>
+
+                <div class="flex flex-col items-center" data-aos="fade-left" data-aos-duration="1000">
+                    <div class="w-full max-w-[220px] md:max-w-[260px] aspect-[3/4] rounded-t-full rounded-b-3xl overflow-hidden mb-6 shadow-xl border-4 border-g-bg relative">
+                        <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" alt="Pasangan" class="w-full h-full object-cover">
+                    </div>
+                    <h3 class="font-serif text-2xl md:text-3xl font-bold text-g-primary mb-2">Lisfatul Khoiriyah</h3>
+                    <p class="text-[10px] md:text-xs tracking-widest uppercase text-g-secondary mb-1">Putri Dari</p>
+                    <p class="text-sm font-medium text-gray-600">Bapak Enjang Saepudin & Ibu Euis Masitah</p>
+                    <p class="text-xs text-gray-400 mt-1">Cianjur, Jawa Barat</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-24 bg-g-bg relative w-full overflow-hidden">
+        <div class="max-w-5xl mx-auto px-4 md:px-6 relative z-10">
+            <div class="text-center mb-12 md:mb-16" data-aos="fade-up">
+                <p class="font-sans text-[10px] md:text-xs tracking-[0.3em] uppercase text-g-secondary mb-2">Save the Date</p>
+                <h2 class="font-cursive text-5xl md:text-6xl text-g-primary">Rangkaian Acara</h2>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10">
+                <div class="bg-white rounded-2xl md:rounded-3xl shadow-lg flex flex-col text-center overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000">
+                    <div class="wave-card-header">
+                        <i class="fas fa-mosque text-3xl md:text-4xl text-g-gold mb-3 md:mb-4"></i>
+                        <h3 class="font-serif text-2xl md:text-3xl font-semibold">Akad Nikah</h3>
+                        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="wave-svg h-[30px] md:h-[40px]">
+                            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V120H1200V0Z" fill="#ffffff"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6 md:p-8 pt-4 flex-1 flex flex-col justify-center">
+                        <p class="flex items-center justify-center gap-2 mb-2 text-gray-600 font-medium text-sm md:text-base"><i class="far fa-calendar-check text-g-accent"></i> Minggu, 20 Des 2026</p>
+                        <p class="flex items-center justify-center gap-2 mb-4 md:mb-6 text-gray-600 font-medium text-sm md:text-base"><i class="far fa-clock text-g-accent"></i> 08:00 WIB - Selesai</p>
+                        <div class="w-12 h-px bg-gray-200 mx-auto mb-4 md:mb-6"></div>
+                        <p class="font-bold text-g-primary text-base md:text-lg">Masjid Agung Cianjur</p>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2">Jl. Siti Jenab No.14, Pamoyanan, Kec. Cianjur.</p>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl md:rounded-3xl shadow-lg flex flex-col text-center overflow-hidden" data-aos="zoom-in-up" data-aos-duration="1000" data-aos-delay="200">
+                    <div class="wave-card-header bg-g-secondary">
+                        <i class="fas fa-glass-cheers text-3xl md:text-4xl text-g-gold mb-3 md:mb-4"></i>
+                        <h3 class="font-serif text-2xl md:text-3xl font-semibold">Resepsi</h3>
+                        <svg viewBox="0 0 1200 120" preserveAspectRatio="none" class="wave-svg h-[30px] md:h-[40px]">
+                            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V120H1200V0Z" fill="#ffffff"></path>
+                        </svg>
+                    </div>
+                    <div class="p-6 md:p-8 pt-4 flex-1 flex flex-col justify-center">
+                        <p class="flex items-center justify-center gap-2 mb-2 text-gray-600 font-medium text-sm md:text-base"><i class="far fa-calendar-alt text-g-accent"></i> Minggu, 20 Des 2026</p>
+                        <p class="flex items-center justify-center gap-2 mb-4 md:mb-6 text-gray-600 font-medium text-sm md:text-base"><i class="far fa-clock text-g-accent"></i> 11:00 WIB - Selesai</p>
+                        <div class="w-12 h-px bg-gray-200 mx-auto mb-4 md:mb-6"></div>
+                        <p class="font-bold text-g-primary text-base md:text-lg">Ballroom Hotel / Gedung</p>
+                        <p class="text-xs md:text-sm text-gray-500 mt-2">Jl. Contoh Alamat Resepsi No.123, Cianjur.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center mt-12 md:mt-16" data-aos="zoom-in">
+                <a href="https://goo.gl/maps/example" target="_blank" class="inline-flex items-center justify-center gap-2 bg-g-primary text-white px-6 md:px-8 py-3 rounded-full hover:bg-g-secondary transition-all text-xs md:text-sm font-semibold shadow-lg hover:-translate-y-1 w-full max-w-xs">
+                    <i class="fas fa-map-marker-alt"></i> Petunjuk Arah Lokasi
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-24 px-4 bg-white w-full">
+        <div class="max-w-5xl mx-auto">
+            <div class="text-center mb-12" data-aos="fade-up">
+                <p class="font-sans text-[10px] md:text-xs tracking-[0.3em] uppercase text-g-secondary mb-2">Our Memories</p>
+                <h2 class="font-serif text-4xl md:text-6xl text-g-primary font-bold">Galeri Foto</h2>
+            </div>
+
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
+                <div class="aspect-square overflow-hidden rounded-lg shadow-sm" data-aos="zoom-in">
+                    <img src="https://images.unsplash.com/photo-1519741497674-611481863552?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="100">
+                    <img src="https://images.unsplash.com/photo-1545241047-bf1b16a24558?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="200">
+                    <img src="https://images.unsplash.com/photo-1511285560929-80b456fea0bc?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="aspect-square overflow-hidden rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="300">
+                    <img src="https://images.unsplash.com/photo-1557862921-37829c790f19?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                </div>
+                <div class="col-span-2 md:col-span-4 aspect-[21/9] md:aspect-[3/1] overflow-hidden rounded-lg shadow-sm" data-aos="zoom-in" data-aos-delay="400">
+                    <img src="https://images.unsplash.com/photo-1606800052052-a08af7148866?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80" class="w-full h-full object-cover hover:scale-110 transition-transform duration-700">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 md:py-24 px-4 bg-g-bg border-t border-g-primary/10 w-full overflow-hidden">
+        <div class="max-w-4xl mx-auto text-center">
+            <div data-aos="fade-down">
+                <div class="w-14 h-14 md:w-16 md:h-16 bg-white rounded-full flex items-center justify-center mx-auto mb-4 md:mb-6 shadow-md text-g-gold border border-g-bg">
+                    <i class="fas fa-gift text-xl md:text-2xl"></i>
+                </div>
+                <h2 class="font-serif text-3xl md:text-5xl text-g-primary mb-3 md:mb-4 font-bold">Kirim Hadiah</h2>
+                <p class="text-xs md:text-sm text-gray-600 mb-10 max-w-xl mx-auto px-2">
+                    Doa restu Anda merupakan karunia yang sangat berarti. Jika Anda bermaksud memberikan tanda kasih, dapat melalui fitur di bawah ini.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-md border-l-8 border-g-primary text-left flex flex-col justify-between" data-aos="fade-up" data-aos-delay="100">
+                    <div class="mb-4">
+                        <p class="text-[10px] md:text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Bank BCA</p>
+                        <p class="font-serif text-lg md:text-xl text-gray-800 font-bold">Aji Ulhak</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl flex items-center justify-between border border-gray-100">
+                        <span id="norek-bca" class="font-mono text-base md:text-lg text-g-primary font-bold tracking-widest">1234567890</span>
+                        <button onclick="copyToClipboard('norek-bca', 'btn-bca')" id="btn-bca" class="bg-g-primary text-white px-4 py-2 rounded-lg text-[10px] md:text-xs font-semibold hover:bg-g-secondary transition-colors shrink-0">
+                            SALIN
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-5 md:p-6 rounded-2xl shadow-md border-l-8 border-g-secondary text-left flex flex-col justify-between" data-aos="fade-up" data-aos-delay="300">
+                    <div class="mb-4">
+                        <p class="text-[10px] md:text-xs font-semibold text-gray-400 mb-1 uppercase tracking-wider">Bank Mandiri</p>
+                        <p class="font-serif text-lg md:text-xl text-gray-800 font-bold">Lisfatul Khoiriyah</p>
+                    </div>
+                    <div class="bg-gray-50 p-3 rounded-xl flex items-center justify-between border border-gray-100">
+                        <span id="norek-mandiri" class="font-mono text-base md:text-lg text-g-primary font-bold tracking-widest">0987654321</span>
+                        <button onclick="copyToClipboard('norek-mandiri', 'btn-mandiri')" id="btn-mandiri" class="bg-g-primary text-white px-4 py-2 rounded-lg text-[10px] md:text-xs font-semibold hover:bg-g-secondary transition-colors shrink-0">
+                            SALIN
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="py-16 bg-g-primary text-white text-center px-4 w-full">
+        <div data-aos="fade-up">
+            <h2 class="font-cursive text-4xl md:text-5xl mb-4 text-g-gold">Aji & Lisfatul</h2>
+            <p class="text-xs md:text-sm text-gray-300 mb-6 font-light max-w-sm mx-auto px-4">
+                Merupakan suatu kebahagiaan apabila Bapak/Ibu/Saudara/i berkenan hadir dan memberikan doa restu.
+            </p>
+            <p class="text-xs md:text-sm font-medium tracking-wide">Wassalamu’alaikum Warahmatullahi Wabarakatuh</p>
+            <p class="text-[10px] text-gray-400 mt-10">© 2026 Crafted Ferry'</p>
+        </div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+
+    <script>
+        // --- 1. Audio, Cover & AOS ---
+        const audio = document.getElementById("bg-music");
+        const musicBtn = document.getElementById("music-btn");
+        const musicIcon = document.getElementById("music-icon");
+        let isPlaying = false;
+
+        function openInvitation() {
+            document.getElementById("cover-page").classList.add("cover-fade");
+            document.body.classList.remove("locked");
+            
+            setTimeout(() => {
+                document.body.style.height = "auto";
+                musicBtn.classList.remove("hidden");
+                AOS.init({
+                    once: true,
+                    offset: 30, 
+                    duration: 800
+                });
+            }, 600);
+            
+            audio.play().then(() => {
+                isPlaying = true;
+                musicIcon.classList.add("spin-slow");
+            }).catch(e => console.log("Autoplay diblokir browser: ", e));
+        }
+
+        musicBtn.addEventListener("click", () => {
+            if (isPlaying) {
+                audio.pause();
+                musicIcon.classList.remove("spin-slow", "fa-compact-disc");
+                musicIcon.classList.add("fa-pause");
+            } else {
+                audio.play();
+                musicIcon.classList.add("spin-slow", "fa-compact-disc");
+                musicIcon.classList.remove("fa-pause");
+            }
+            isPlaying = !isPlaying;
+        });
+
+        const weddingDate = new Date("2026-12-20T08:00:00").getTime();
+        const timer = setInterval(function() {
+            const now = new Date().getTime();
+            const distance = weddingDate - now;
+
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            document.getElementById("days").innerHTML = days < 10 ? '0' + days : days;
+            document.getElementById("hours").innerHTML = hours < 10 ? '0' + hours : hours;
+            document.getElementById("minutes").innerHTML = minutes < 10 ? '0' + minutes : minutes;
+            document.getElementById("seconds").innerHTML = seconds < 10 ? '0' + seconds : seconds;
+
+            if (distance < 0) {
+                clearInterval(timer);
+                document.getElementById("countdown").innerHTML = "<p class='text-lg md:text-xl text-g-primary italic font-serif col-span-4'>Acara Telah Berlangsung</p>";
+            }
+        }, 1000);
+        function copyToClipboard(textId, btnId) {
+            const text = document.getElementById(textId).innerText;
+            const btn = document.getElementById(btnId);
+
+            navigator.clipboard.writeText(text).then(() => {
+                btn.innerHTML = 'TERSALIN!';
+                btn.classList.add('bg-green-600');
+                btn.classList.remove('bg-g-primary');
+                setTimeout(() => { 
+                    btn.innerHTML = 'SALIN'; 
+                    btn.classList.remove('bg-green-600');
+                    btn.classList.add('bg-g-primary');
+                }, 2000);
+            }).catch(err => {
+                console.error("Gagal menyalin: ", err);
+                alert("Browser tidak mendukung salin otomatis. Silakan salin manual.");
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        let namaTamu = urlParams.get('q');
+        if (namaTamu) {
+            namaTamu = namaTamu.replace(/\+/g, ' ');
+            document.getElementById('nama-tamu').innerText = namaTamu;
+        }
+    });
+    </script>
+</body>
+</html>
